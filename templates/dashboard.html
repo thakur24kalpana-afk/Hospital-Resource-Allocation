@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:sans-serif;
+    background:linear-gradient(135deg,#74b9ff,#0984e3);
+    height:100vh;
+    overflow:hidden;
+}
+
+/* HEADER */
+.header{
+    height:50px;
+    display:flex;
+    align-items:center;
+    padding-left:20px;
+    color:white;
+    font-size:22px;
+    font-weight:bold;
+}
+
+/* MAIN */
+.main{
+    height:calc(100vh - 50px);
+    padding:10px;
+}
+
+/* GRID */
+.grid{
+    height:100%;
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap:10px;
+}
+
+/* CARD */
+.card{
+    background:white;
+    border-radius:15px;
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    overflow:hidden;
+}
+
+/* FORM */
+input{
+    width:100%;
+    padding:6px;
+    margin:4px 0;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+
+button{
+    width:100%;
+    padding:8px;
+    margin-top:5px;
+    background:#0984e3;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+/* RESULT TEXT */
+.result p{
+    margin:2px 0;
+    font-size:14px;
+}
+
+/* CHART FIX */
+canvas{
+    max-height:180px !important;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+    body{
+        overflow:auto;
+    }
+    .grid{
+        grid-template-columns:1fr;
+        grid-template-rows:auto;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+Hospital Resource Allocation
+</div>
+
+<div class="main">
+
+<div class="grid">
+
+<!-- FORM -->
+<div class="card">
+
+<form method="POST">
+    <input name="beds" placeholder="Total Beds">
+    <input name="ventilators" placeholder="Ventilators">
+    <button>Run Allocation</button>
+</form>
+
+{% if result %}
+<hr>
+<div class="result">
+<p><b>Critical:</b> {{result.critical}}</p>
+<p><b>Serious:</b> {{result.serious}}</p>
+<p><b>Mild:</b> {{result.mild}}</p>
+<p><b>Score:</b> {{result.score}}</p>
+</div>
+{% endif %}
+
+</div>
+
+<!-- BAR -->
+<div class="card">
+<canvas id="barChart"></canvas>
+</div>
+
+<!-- PIE -->
+<div class="card">
+<canvas id="pieChart"></canvas>
+</div>
+
+<!-- EMPTY -->
+<div class="card">
+<h3>Analytics</h3>
+<p style="font-size:14px;">Optimized resource insights</p>
+</div>
+
+</div>
+
+</div>
+
+{% if result %}
+<script>
+const data = {
+    labels: ["Critical","Serious","Mild"],
+    datasets: [{
+        data: [{{result.critical}},{{result.serious}},{{result.mild}}],
+        backgroundColor:["#ff4757","#ffa502","#2ed573"]
+    }]
+};
+
+new Chart(document.getElementById("barChart"), {
+    type: 'bar',
+    data: data,
+    options:{
+        plugins:{legend:{display:false}}
+    }
+});
+
+new Chart(document.getElementById("pieChart"), {
+    type: 'pie',
+    data: data
+});
+</script>
+{% endif %}
+
+</body>
+</html>
